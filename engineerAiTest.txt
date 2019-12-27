@@ -1,0 +1,151 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+PostModal.ts
+
+Export class FilterCategory {
+search_by_date : Date;
+story : string;
+}
+
+export class PostData {
+title :  string;
+url : string;
+author: string;
+created_at : Date;
+}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+PostDetailModal.ts
+
+Import {component ,Input , OnInit ,OnDestroy} from @angular/core
+Import  PostApiService  from ‘ ./PostApiService.ts’
+
+@Component({
+ Selectors : ‘post-detail-modal’
+ template : `{{json_data | json}}`,
+})
+Class PostDetail implements OnInit , OnDestroy {
+ @Input json_data ;
+constructor(private postApi: PostApiService){
+}
+OnInit (){
+}
+
+OnDestroy(){
+}
+}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+App.html
+
+//  only writing required things not all things
+<div>
+<table> 
+<thead>
+ <tr>
+ <th>Title </th>
+<th>Url  </th>
+<th>Author </th>
+<th> Created_At</th>
+</tr>
+ </thead>
+
+<tbody> 
+<ng-container *ngFor = “let data of postData; let  idx as Index”> 
+<tr (click) = “openPostDetail(idx)”>
+<td>{{data.title}}</td>
+<td>{{data.url}}</td>
+<td>{{data.author}}</td>
+<td>{{data.created_at}}</td>
+ </tr>
+
+//  for  open modal 
+<ng-template  #idx> 
+<div class=”modal-header”> 
+<h4 class= “modal-title pull-left”> Post Detail<h4>
+<button type=”button” class=”close pull right” aria-label=””close  (click) =”modalRef.hide()”> 
+<span aria-hidden=”true”> &times</span>
+</button>
+</div>
+<div class=””modal-body”> </div>
+   // modal component 
+    <app-post-data-modal  [json_data] =”data”>  </ app-post-data-modal>
+</ng-template>
+</ng-container>
+</tbody>
+</table>
+
+</div>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+App.ts
+
+Import {component , TemplateRef , OnInit ,OnDestroy} from @angular/core
+Import  PostApiService  from ‘ ./PostApiService.ts’
+Import {FilterCategory ,PostData} from ‘./PostModal.ts’
+Import {BsModalService , BsModalRef}  from ‘ngx-bootstrap/modal’
+Import {Subscription} from ‘rxjs/Subscriptipn’
+Import {takeUntill} from ‘rxjs’
+
+
+@Component({
+ Selectors : ‘post-data’
+ templateUrls : ‘Post.html’,
+})
+Class Post implements OnInit , OnDestroy {
+ modalRef : BsModalRef;
+ filterCategory : FilterCategory;
+ postData: Array<PostData>();
+ unsubscribe : Subscription;
+constructor(private postApi: PostApiService ,
+                  private  modalService : BsModalService ){
+this.filterCategory  =  new FilterCategory();
+this.postData = new Array<PostData>();
+}
+OnInit (){
+Unsubscribe = this.postApi.getPost().subscribe(res=>{
+  this.postData = res.data;
+},
+(error)=>{
+console.log(error);
+})
+}
+
+// For open PostDetails Modal
+openPostDetail (template: dx) {
+thos.modalRef = this.modalService.show(template);
+}
+OnDestroy(){
+unsubscribe.unsubscribe();
+}
+}
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+PostApiService.ts
+
+Import {HttpClient, HttpHeaders} from @angular/common/httpClient
+Import {FilterCategory ,PostData} from ‘./PostModal.ts’
+@Injectible ({
+provideIn :  ‘root’
+})
+Export class PostApiService {
+constructor() {private  http :HttpClient }
+ 
+getPost(filter: FilterCategory) : Observable<PostData[]> {
+const  headers = new HttpHeaders({
+‘Content-type’ : ‘application/json’
+})
+const  options = {
+headers : headers,
+observe: response 
+}
+return this.http.get(https://hn.algolia.com/api/v1/filter.search_by_date?tags=filter.story, options).pipe(
+map(response ={
+return response;
+})
+)
+}
+}
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
