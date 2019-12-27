@@ -17,10 +17,10 @@ created_at : Date;
 PostDetailModal.ts
 
 Import {component ,Input , OnInit ,OnDestroy} from @angular/core
-Import  PostApiService  from ‘ ./PostApiService.ts’
+Import  PostApiService  from ï¿½ ./PostApiService.tsï¿½
 
 @Component({
- Selectors : ‘post-detail-modal’
+ Selectors : ï¿½post-detail-modalï¿½
  template : `{{json_data | json}}`,
 })
 Class PostDetail implements OnInit , OnDestroy {
@@ -38,8 +38,32 @@ OnDestroy(){
 App.html
 
 //  only writing required things not all things
-<div>
-<table> 
+
+<div class="container">
+  <div class="search-story">
+   <form #f='ngForm' (ngSubmit)="f.form.valid && getPostData()" novalidate> 
+    <div class="row">
+     <div class="form-group col-md-4">
+        <label >Date</label>
+        <input type="date" class="form-control"   name="date" #date="ngModel" [(ngModel)]="filterCategory.search_by_date" [ngClass]="{ 'is-invalid': f.submitted && date.invalid }" required>
+        <div *ngIf="f.submitted && date.invalid" class="invalid-feedback">
+          <div *ngIf="date.errors.required"> Date is required</div>
+      </div>
+      <div class="form-group col-md-4">
+        <label >Story</label>
+        <input type="text" class="form-control"   name="story" #story="ngModel" [(ngModel)]="filterCategory.story" [ngClass]="{ 'is-invalid': f.submitted && story.invalid }" required>
+        <div *ngIf="f.submitted && story.invalid" class="invalid-feedback">
+          <div *ngIf="story.errors.required"> Story is required</div>
+      </div>
+       <div class="form-groupcol-md-4">
+          <input type="submit" class="btn btn-primary" value="Search">
+       </div>
+    </div>
+   </form>
+  </div>
+
+  <div *ngIf="postData?.length > 0 ;else notData">
+   <table> 
 <thead>
  <tr>
  <th>Title </th>
@@ -50,8 +74,8 @@ App.html
  </thead>
 
 <tbody> 
-<ng-container *ngFor = “let data of postData; let  idx as Index”> 
-<tr (click) = “openPostDetail(idx)”>
+<ng-container *ngFor = ï¿½let data of postData; let  idx as Indexï¿½> 
+<tr (click) = ï¿½openPostDetail(idx)ï¿½>
 <td>{{data.title}}</td>
 <td>{{data.url}}</td>
 <td>{{data.author}}</td>
@@ -60,19 +84,25 @@ App.html
 
 //  for  open modal 
 <ng-template  #idx> 
-<div class=”modal-header”> 
-<h4 class= “modal-title pull-left”> Post Detail<h4>
-<button type=”button” class=”close pull right” aria-label=””close  (click) =”modalRef.hide()”> 
-<span aria-hidden=”true”> &times</span>
+<div class=ï¿½modal-headerï¿½> 
+<h4 class= ï¿½modal-title pull-leftï¿½> Post Detail<h4>
+<button type=ï¿½buttonï¿½ class=ï¿½close pull rightï¿½ aria-label=ï¿½ï¿½close  (click) =ï¿½modalRef.hide()ï¿½> 
+<span aria-hidden=ï¿½trueï¿½> &times</span>
 </button>
 </div>
-<div class=””modal-body”> </div>
+<div class=ï¿½ï¿½modal-bodyï¿½> </div>
    // modal component 
-    <app-post-data-modal  [json_data] =”data”>  </ app-post-data-modal>
+    <app-post-data-modal  [json_data] =ï¿½dataï¿½>  </ app-post-data-modal>
 </ng-template>
 </ng-container>
 </tbody>
 </table>
+  </div>
+
+  // when no Data Found
+  <ng-template #notData>
+  <p>No Data Found</p>
+   </ng-template>
 
 </div>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -80,16 +110,16 @@ App.html
 App.ts
 
 Import {component , TemplateRef , OnInit ,OnDestroy} from @angular/core
-Import  PostApiService  from ‘ ./PostApiService.ts’
-Import {FilterCategory ,PostData} from ‘./PostModal.ts’
-Import {BsModalService , BsModalRef}  from ‘ngx-bootstrap/modal’
-Import {Subscription} from ‘rxjs/Subscriptipn’
-Import {takeUntill} from ‘rxjs’
+Import  PostApiService  from ï¿½ ./PostApiService.tsï¿½
+Import {FilterCategory ,PostData} from ï¿½./PostModal.tsï¿½
+Import {BsModalService , BsModalRef}  from ï¿½ngx-bootstrap/modalï¿½
+Import {Subscription} from ï¿½rxjs/Subscriptipnï¿½
+Import {takeUntill} from ï¿½rxjsï¿½
 
 
 @Component({
- Selectors : ‘post-data’
- templateUrls : ‘Post.html’,
+ Selectors : ï¿½post-dataï¿½
+ templateUrls : ï¿½Post.htmlï¿½,
 })
 Class Post implements OnInit , OnDestroy {
  modalRef : BsModalRef;
@@ -102,7 +132,10 @@ this.filterCategory  =  new FilterCategory();
 this.postData = new Array<PostData>();
 }
 OnInit (){
-Unsubscribe = this.postApi.getPost().subscribe(res=>{
+}
+
+getPostData(){
+  Unsubscribe = this.postApi.getPost(this.filterCategory).subscribe(res=>{
   this.postData = res.data;
 },
 (error)=>{
@@ -124,16 +157,16 @@ unsubscribe.unsubscribe();
 PostApiService.ts
 
 Import {HttpClient, HttpHeaders} from @angular/common/httpClient
-Import {FilterCategory ,PostData} from ‘./PostModal.ts’
+Import {FilterCategory ,PostData} from ï¿½./PostModal.tsï¿½
 @Injectible ({
-provideIn :  ‘root’
+provideIn :  ï¿½rootï¿½
 })
 Export class PostApiService {
 constructor() {private  http :HttpClient }
  
 getPost(filter: FilterCategory) : Observable<PostData[]> {
 const  headers = new HttpHeaders({
-‘Content-type’ : ‘application/json’
+ï¿½Content-typeï¿½ : ï¿½application/jsonï¿½
 })
 const  options = {
 headers : headers,
